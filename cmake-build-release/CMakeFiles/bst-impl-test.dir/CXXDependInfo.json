@@ -1,0 +1,30 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "GNU",
+	"compiler-simulate-id" : "",
+	"config" : "Release",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/cmake-build-release",
+	"dir-cur-src" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook",
+	"dir-top-bld" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/cmake-build-release",
+	"dir-top-src" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"vcpkg_installed/x64-linux/include"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/cmake-build-release/CMakeFiles/bst-impl-test.dir",
+	"sources" : 
+	{
+		"CMakeFiles/bst-impl-test.dir/src/bst-impl-test.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/src/bst-impl-test.cpp"
+		}
+	}
+}

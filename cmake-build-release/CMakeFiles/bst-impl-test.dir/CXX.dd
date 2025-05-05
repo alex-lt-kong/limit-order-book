@@ -1,0 +1,3 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles/bst-impl-test.dir/bst-impl-test.cpp.o: dyndep
+

@@ -1,0 +1,11 @@
+{
+"rules": [
+{
+"primary-output": "CMakeFiles/bst-impl-test.dir/bst-impl-test.cpp.o",
+"requires": [
+]
+}
+],
+"version": 0,
+"revision": 0
+}

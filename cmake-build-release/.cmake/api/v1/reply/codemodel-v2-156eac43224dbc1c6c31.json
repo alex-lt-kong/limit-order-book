@@ -1,0 +1,69 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Release-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.31"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "binary_search_tree",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "bst-impl-test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bst-impl-test-Release-0a20d376d61fb5f6db32.json",
+					"name" : "bst-impl-test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "heap-impl-test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-heap-impl-test-Release-f10b8ee55cb45a0bf0b5.json",
+					"name" : "heap-impl-test",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/cmake-build-release",
+		"source" : "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
