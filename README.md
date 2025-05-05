@@ -103,7 +103,6 @@
   orders. <sup>[[What is an efficient data structure to model order book?]](https://quant.stackexchange.com/a/32482/83130)
 
 - https://github.com/da-bao-jian/fast_limit_orderbook
-- [RGM Advisors Order Book Programming Problem](https://github.com/perrye2/LimitOrderBook/tree/master)
 
 ## 3. Some data structures that may be useful in LOB implementation
 
@@ -213,6 +212,13 @@ lowest first), and the total income you would receive if you sold
 <var>target-size</var> shares (by hitting as many bids as necessary,
 highest first). Each time the income or expense changes, it prints the
 changed value.</p>
+
+<p><b>Editor's Note:</b> It is slightly confusing whether my <i>Pricer</i> will cause a
+change to the order book being maintained (i.e., if <i>Pricer</i> sells 200
+shares, does it reduce the best bid's size by 200?). If you read through the
+<b>Example Input and Output</b> section below you can draw the conclusion that
+the answer is negative, <i>Pricer</i>only calculates such hypothetical price,
+but it does not impact the order book in any manner.</p>
 
 <h3>Input Format</h3>
 
