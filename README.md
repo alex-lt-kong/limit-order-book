@@ -1,10 +1,46 @@
 # Limit Order Book
 
-## 1. What is a limit order book (LOB)
+## 1. Introduction
+
+### 1.1 What is a limited order book (LOB)
 
 - A limit order book is a record of outstanding limit orders. A limit order is a
   type of order to buy or sell a security at a specific price or
   better.<sup>[[What Is a Limit Order Book?]](https://www.investopedia.com/terms/l/limitorderbook.asp)
+
+### 1.2 L1/L2/L3 market data
+
+- **L1 market data:** Provides more comprehensive by displaying the full depth
+  of the order book. This includes multiple bid and ask prices at different
+  levels, not just the best available
+  prices <sup>[[Market Data](https://www.interactivebrokers.com/en/pricing/market-data-pricing.php)]
+
+  ![](./assets/images/level-1-market-data.webp "level-1-market-data.webp")
+
+
+- **L2 market data:** Provides more comprehensive by displaying the full depth
+  of the order book. This includes multiple bid and ask prices at different
+  levels, not just the best available
+  prices. <sup>[[Market Data](https://www.interactivebrokers.com/en/pricing/market-data-pricing.php)]</sup>
+  L2 data is also sometimes referred to as market-by-price (MBP), since
+  the updates to book depth are usually keyed by price or price level. It may
+  also be called market depth or depth of market (
+  DoM). <sup>[[L2](https://databento.com/microstructure/level-2-market-data)]
+
+  ![](./assets/images/level-2-market-data.png "level-2-market-data.png")
+
+
+- **L3 market data:** Level 3 (L3) refers to market data that provides every
+  individual buy and sell order at every price level. This is often also the
+  highest granularity of data
+  available. L3 data is also called market by order or full order book
+  data. <sup>[[L3](https://databento.com/microstructure/level-3-market-data)]
+
+    <p align="center">
+      <img src="./assets/images/level-1-market-data-illustration.webp" width="30%" />
+      <img src="./assets/images/level-2-market-data-illustration.webp" width="30%" />
+      <img src="./assets/images/level-3-market-data-illustration.webp" width="30%" />
+    </p>
 
 ## 2. Factors to consider before implementing an LOB
 
@@ -16,7 +52,7 @@
   100,000-200,000 messages per second during high volume
   periods. [[How to Build a Fast Limit Order Book]](https://web.archive.org/web/20110219163448/http://howtohft.wordpress.com/2011/02/15/how-to-build-a-fast-limit-order-book/)
 
-### 2.1 It is important to start with the business use case
+### 2.1 The business use case
 
 - Consider the below factors:
     - What queries need to be optimized for your application?
@@ -35,8 +71,9 @@
       ticks. <sup>[[Red Black Trees for Limit Order Book](https://quant.stackexchange.com/a/63161/83130)]
 
 - LOB's behavior can differ depending on whether you are implementing an LOB for
-  equities (order-based, a.k.a. Market by Order or
-  MBO<sup>[[Market by Order (MBO)]](https://www.cmegroup.com/education/market-by-order-mbo.html))
+  equities (order-based, a.k.a. Market by Order,
+  MBO or
+  L3) <sup>[[Market by Order (MBO)]](https://www.cmegroup.com/education/market-by-order-mbo.html)</sup>, <sup>[[L3]](https://databento.com/microstructure/level-3-market-data)</sup>
   or futures (level-based, a.k.a., Market by Price or
   MBP) <sup>[[What is an efficient data structure to model order book?]](https://quant.stackexchange.com/a/32482/83130)
 
