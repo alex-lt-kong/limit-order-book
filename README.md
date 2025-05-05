@@ -40,7 +40,7 @@
   or futures (level-based, a.k.a., Market by Price or
   MBP) <sup>[[What is an efficient data structure to model order book?]](https://quant.stackexchange.com/a/32482/83130)
 
-### 3. Engineering considerations
+### 2.2 Engineering considerations
 
 - There are three main operations that an LOB has to implement: add, cancel, and
   execute. The goal is to implement these operations in O(1) time while making
@@ -78,7 +78,7 @@
 
       ![](assets/images/bst-illustration.png "bst-illustration.png")
 
-### Common operations
+#### Common operations
 
 - Insert
 
@@ -92,7 +92,7 @@
 
       ![](assets/images/bst-delete.gif "bst-insert.gif")
 
-## Heap
+### 3.2 Heap
 
 - A Min-Heap is a Data Structure with the following
   properties.[[2](https://www.geeksforgeeks.org/introduction-to-min-heap-data-structure/)]
@@ -101,7 +101,7 @@
       nodes and the same thing must be done for its left and right sub-tree
       also.
 
-### Common operations
+#### Common operations
 
 - Insert
 
