@@ -1,6 +1,13 @@
 # Limit Order Book
 
-## 1. Introduction
+## Table of contents
+
+- [1. Introduction](#1-introduction)
+- [2. Factors to consider before implementing an LOB](#2-factors-to-consider-before-implementing-an-lob)
+- [3. Some data structures that may be useful in LOB implementation](#3-Some-data-structures-that-may-be-useful-in-LOB-implementation)
+- [4. Order Book Programming Problem](#4-Order-Book-Programming-Problem)
+
+## 1. Introduction <a name="introduction"></a>
 
 ### 1.1 What is a limited order book (LOB)
 
@@ -342,7 +349,7 @@ are in the right column. </p>
 
 <table><tbody>
   <tr>
-	<th>Standard Input</th>
+	<th style="width: 200px; white-space: nowrap;">Standard Input</th>
 	<th>Standard Output/Notes</th>
   </tr>
   <tr>
