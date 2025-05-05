@@ -1,48 +1,69 @@
-# Order Book
+# Limit Order Book
 
-- Question: Which data structure will you use to implement a limit order book?
-  And why?
-- ChatGPT:
-  To implement a limit order book, a combination of data structures is typically
-  used to efficiently manage and access orders. The most commonly used
-  structures are:
+## 1. What is a limit order book (LOB)
 
-    1. Balanced Binary Search Tree (BST):
-        - Implementation: Structures like Red-Black Trees or AVL Trees can be
-          used.
-        - Why: They allow for efficient insertion, deletion, and lookup
-          operations, which are essential for managing orders. They can maintain
-          sorted order, enabling quick access to the best bid and ask prices.
-    1. Hash Map:
-        - Implementation: A hash map can be used to store orders by their
-          unique identifiers (like order IDs).
-        - Why: It allows for O(1) average time complexity for lookups,
-          making it easy to find and modify or cancel orders.
-    1. Priority Queue (Heap):
+- A limit order book is a record of outstanding limit orders. A limit order is a
+  type of order to buy or sell a security at a specific price or
+  better.<sup>[[What Is a Limit Order Book?]](https://www.investopedia.com/terms/l/limitorderbook.asp)
 
-        - Implementation: A max-heap for bids and a min-heap for asks can
-          be used.
+## 2. Factors to consider before implementing an LOB
 
-        - Why: This structure ensures that you can efficiently access
-          the highest bid and the lowest ask at any time, which is crucial for
-          matching orders.
+- To give some idea of the data volumes,
+  the [Nasdaq TotalView ITCH](https://data.nasdaq.com/databases/NTV) feed,
+  which is every event in every instrument traded on the Nasdaq, can have data
+  rates of 20+ gigabytes/day with spikes of 3 megabytes/second or more. The
+  individual messages average about 20 bytes each so this means handling
+  100,000-200,000 messages per second during high volume
+  periods. [[How to Build a Fast Limit Order Book]](https://web.archive.org/web/20110219163448/http://howtohft.wordpress.com/2011/02/15/how-to-build-a-fast-limit-order-book/)
 
-    1. Doubly Linked List:
-        - Implementation: Can be used to maintain the order of orders at a
-          specific price level.
+### 2.1 It is important to start with the business use case
 
-        - Why: It allows for efficient insertion and deletion of orders
-          at the same price level, which is important for managing limit orders
-          where multiple orders can exist at the same price.
+- Consider the below factors:
+    - What queries need to be optimized for your application?
+    - Sparsity of the book.
+    - Statistical distribution of book
+      events. <sup>[[Red Black Trees for Limit Order Book](https://quant.stackexchange.com/a/63161/83130)]
 
-- For the time being, let's focus on the limit order book only. A limit order is
-  a type of order to buy or sell a security at a specific price or better.
+- Markets/products to trade/liquidity impacts engineering decisions:
+    - In illiquid options, there may be very few resting orders on the book, so
+      it may be cheaper to just store everything in arrays and linearly walk
+      through them.
+    - In liquid futures, most events only affect a few hundred price levels, and
+      price bands might give you a bound on levels that you actually care about,
+      so it is possible to preallocate the levels in an array and represent
+      index prices as an offset from some initial state in number of
+      ticks. <sup>[[Red Black Trees for Limit Order Book](https://quant.stackexchange.com/a/63161/83130)]
 
-- https://quant.stackexchange.com/questions/63140/red-black-trees-for-limit-order-book
+- LOB's behavior can differ depending on whether you are implementing an LOB for
+  equities (order-based, a.k.a. Market by Order or
+  MBO<sup>[[Market by Order (MBO)]](https://www.cmegroup.com/education/market-by-order-mbo.html))
+  or futures (level-based, a.k.a., Market by Price or
+  MBP) <sup>[[What is an efficient data structure to model order book?]](https://quant.stackexchange.com/a/32482/83130)
+
+### 3. Engineering considerations
+
+- There are three main operations that an LOB has to implement: add, cancel, and
+  execute. The goal is to implement these operations in O(1) time while making
+  it possible for the trading model to efficiently ask questions like:
+    - what are the best bid and offer?
+    - how much volume is there between prices A and B?
+    - what is order X's current position in the
+      book? <sup>[[How to Build a Fast Limit Order Book]](https://web.archive.org/web/20110219163448/http://howtohft.wordpress.com/2011/02/15/how-to-build-a-fast-limit-order-book/)
+
+- If you can, you should also optimize for the particular exchange. For
+  instance, it turns out that, last I checked, Nasdaq generates order IDs
+  incrementally starting from a small number, so you can store all the orders in
+  a giant array instead of a hashtable. This is really cache- and TLB-friendly
+  compared to a hashtable because most updates tend to happen to
+  recently-dereferenced
+  orders. <sup>[[What is an efficient data structure to model order book?]](https://quant.stackexchange.com/a/32482/83130)
+
 - https://github.com/da-bao-jian/fast_limit_orderbook
 - [RGM Advisors Order Book Programming Problem](https://github.com/perrye2/LimitOrderBook/tree/master)
 
-## Binary search tree
+## 3. Review of some common data structure
+
+### 3.1 Binary search tree
 
 - A Binary Search Tree (BST) is a type of Binary Tree data structure, where the
   following properties must be true for any node "X" in the

@@ -1,4 +1,4 @@
-# Install script for directory: /home/mamsds/repos/proofs-of-concept/cpp/12_orderbook
+# Install script for directory: /home/mamsds/repos/limit-order-book
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,7 +45,7 @@ endif()
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/cmake-build-debug/install_local_manifest.txt"
+  file(WRITE "/home/mamsds/repos/limit-order-book/cmake-build-debug/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -61,6 +61,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/mamsds/repos/proofs-of-concept/cpp/12_orderbook/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/home/mamsds/repos/limit-order-book/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
