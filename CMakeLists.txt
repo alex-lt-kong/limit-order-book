@@ -20,3 +20,4 @@ target_link_libraries(bst-impl-test GTest::gtest GTest::gtest_main GTest::gmock)
 add_executable(heap-impl-test src/heap-impl-test.cpp)
 target_link_libraries(heap-impl-test GTest::gtest GTest::gtest_main GTest::gmock)
 
+add_executable(order-impl-test src/order-impl-test.cpp)

@@ -2,33 +2,49 @@
 #define ORDER_H
 
 #include <iostream>
+#include <string>
+#include <format>
 
-enum struct Side : char { Bid = 0, Ask = 1 };
+namespace OrderBookProgrammingProblem {
+    namespace Order {
+        enum struct Side : char { Bid = 'B', Ask = 'A' };
 
-struct LimitOrder {
-    int id = 0;
-    int64_t timestamp = 0;
-    Side side = Side::Bid;
-    int price = 0;
-    int size = 0;
+        enum struct Type : char { Add = 'A', Reduce = 'R' };
 
-    [[nodiscard]] int volume() const { return price * size; }
+        struct LimitOrder {
+            uint64_t timestamp = 0;
+            Type type = Type::Add;
+            std::string id;
+            Side side = Side::Bid;
+            float price = 0;
+            int size = 0;
 
-    LimitOrder(const int price) : price(price) {}
+            // This is for testing data structures, dont remove it for now
+            LimitOrder(const int price) : price(price) {
+            }
 
-    // Custom three-way comparison
-    auto operator<=>(const LimitOrder &other) const {
-        return price <=> other.price;
+            LimitOrder() = default;
+
+            // Custom three-way comparison
+            auto operator<=>(const LimitOrder &other) const {
+                return price <=> other.price;
+            }
+
+            bool operator==(const LimitOrder &other) const {
+                return price == other.price;
+            }
+
+            friend std::ostream &operator<<(std::ostream &os, const LimitOrder &order) {
+                os << "LimitOrder { timestamp: " << order.timestamp
+                        << ", type: " << static_cast<char>(order.type)
+                        << ", id: " << order.id
+                        << ", side: " << static_cast<char>(order.side)
+                        << ", price: " << order.price
+                        << ", size: " << order.size
+                        << " }";
+                return os;
+            }
+        };
     }
-
-    bool operator==(const LimitOrder &other) const {
-        return price == other.price;
-    }
-};
-
-// Overload operator<< to output the price
-std::ostream &operator<<(std::ostream &os, const LimitOrder &lo) {
-    os << lo.price;
-    return os;
 }
 #endif // ORDER_H
