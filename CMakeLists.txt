@@ -14,10 +14,13 @@ include_directories(${GTEST_INCLUDE_DIRS})
 ################################
 # Unit Tests
 ################################
-add_executable(bst-impl-test src/bst-impl-test.cpp)
+add_executable(bst-impl-test src/tests/bst-impl-test.cpp)
 target_link_libraries(bst-impl-test GTest::gtest GTest::gtest_main GTest::gmock)
 
-add_executable(heap-impl-test src/heap-impl-test.cpp)
+add_executable(heap-impl-test src/tests/heap-impl-test.cpp)
 target_link_libraries(heap-impl-test GTest::gtest GTest::gtest_main GTest::gmock)
 
-add_executable(order-impl-test src/order-impl-test.cpp)
+add_library(utils src/utils.cpp)
+
+add_executable(order-test src/tests/order-test.cpp)
+target_link_libraries(order-test utils GTest::gtest GTest::gtest_main GTest::gmock)

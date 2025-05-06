@@ -1,5 +1,5 @@
-#include "bst-impl.h"
-#include "order.h"
+#include "../bst-impl.h"
+#include "../order.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
