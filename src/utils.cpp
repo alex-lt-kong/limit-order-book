@@ -13,6 +13,16 @@ void utils::split_string(std::string_view str, char delimiter,
   result.push_back(str.substr(start)); // Add last part
 }
 
+bool utils::at_most_n_decimal_places(const std::string_view str,
+                                     const size_t n) {
+  const auto dot_pos = str.find('.');
+  if (dot_pos == std::string::npos) {
+    return true; // No decimal point
+  }
+  const auto decimal_places = str.size() - dot_pos - 1;
+  return decimal_places <= n;
+}
+
 Order::LimitOrder utils::parse_limit_order(const std::string &str) {
   std::vector<std::string_view> parts;
   split_string(str, ' ', parts);
@@ -40,11 +50,15 @@ Order::LimitOrder utils::parse_limit_order(const std::string &str) {
   if (lo.type == Order::Type::Add) {
     lo.side = parts[3] == "S" ? Order::Side::Ask : Order::Side::Bid;
     {
+      float price = 0;
       auto [ptr, ec] = std::from_chars(
-          parts[4].data(), parts[4].data() + parts[4].size(), lo.price);
+          parts[4].data(), parts[4].data() + parts[4].size(), price);
       if (ec != std::errc()) {
         throw std::invalid_argument("Price conversion failed");
       }
+      if (!at_most_n_decimal_places(parts[4], 2))
+        throw std::invalid_argument("Price has more than 2 decimal places");
+      lo.price_cent = price * 100;
     }
     {
       auto [ptr, ec] = std::from_chars(

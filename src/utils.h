@@ -12,6 +12,8 @@ class utils {
                            std::vector<std::string_view> &result);
 
 public:
+  static bool at_most_n_decimal_places(std::string_view str, size_t n);
+
   static Order::LimitOrder parse_limit_order(const std::string &);
 };
 } // namespace OrderBookProgrammingProblem

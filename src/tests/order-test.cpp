@@ -12,7 +12,7 @@ TEST(OrderTest, TestStringRepr1) {
   lo.timestamp = 1234567890;
   lo.type = Order::Type::Add;
   lo.side = Order::Side::Ask;
-  lo.price = 3.14;
+  lo.price_cent = 314;
   lo.size = 123;
   lo.id = "0xdeadbeef";
 
@@ -25,8 +25,8 @@ TEST(OrderTest, TestStringRepr1) {
   std::cout.rdbuf(old);
 
   // Verify output matches expected string
-  EXPECT_EQ(ss.str(), "LimitOrder { timestamp: 1234567890, type: A, id: "
-                      "0xdeadbeef, side: A, price: 3.14, size: 123 }");
+  EXPECT_EQ(ss.str(), "LimitOrder { timestamp: 1234567890, type: Add, id: "
+                      "0xdeadbeef, side: Ask, price_cent: 314, size: 123 }");
 }
 
 TEST(OrderTest, TestStringRepr2) {
@@ -34,7 +34,7 @@ TEST(OrderTest, TestStringRepr2) {
   lo.timestamp = 2147483647;
   lo.type = Order::Type::Reduce;
   lo.side = Order::Side::Bid;
-  lo.price = 1.414;
+  lo.price_cent = 1414;
   lo.size = 9527;
   lo.id = "Helloworld";
 
@@ -47,12 +47,24 @@ TEST(OrderTest, TestStringRepr2) {
   std::cout.rdbuf(old);
 
   // Verify output matches expected string
-  EXPECT_EQ(ss.str(), "LimitOrder { timestamp: 2147483647, type: R, id: "
-                      "Helloworld, side: B, price: 1.414, size: 9527 }");
+  EXPECT_EQ(ss.str(), "LimitOrder { timestamp: 2147483647, type: Reduce, id: "
+                      "Helloworld, size: 9527 }");
+}
+
+TEST(OrderTest, AtMostNDecimalPlaces) {
+  EXPECT_TRUE(Problem::utils::at_most_n_decimal_places("3.14", 2));
+  EXPECT_FALSE(Problem::utils::at_most_n_decimal_places("3.14", 1));
+  EXPECT_FALSE(Problem::utils::at_most_n_decimal_places("3.1415", 2));
+  EXPECT_TRUE(Problem::utils::at_most_n_decimal_places("1.4142135623", 65535));
+  EXPECT_FALSE(Problem::utils::at_most_n_decimal_places("1.4142135623", 0));
+  EXPECT_FALSE(Problem::utils::at_most_n_decimal_places("2.71", 0));
+  EXPECT_TRUE(Problem::utils::at_most_n_decimal_places("9527", 0));
+  EXPECT_TRUE(Problem::utils::at_most_n_decimal_places("0", 0));
+  EXPECT_TRUE(Problem::utils::at_most_n_decimal_places("-2147483647", 1024));
+  EXPECT_TRUE(Problem::utils::at_most_n_decimal_places("-3.2100", 4));
 }
 
 TEST(OrderTest, TestInputLines) {
-  constexpr float tolerance = 0.0001;
   std::vector<std::string> lines = {
       "28800538 A b S 44.26 100", "28800562 A c B 44.10 100",
       "28800744 R b 100",         "28800758 A d B 44.18 157",
@@ -65,19 +77,19 @@ TEST(OrderTest, TestInputLines) {
 
   lo = Problem::utils::parse_limit_order(lines[idx++]);
   EXPECT_EQ(lo.timestamp, 28800562);
-  EXPECT_NEAR(lo.price, 44.10, tolerance);
+  EXPECT_EQ(lo.price_cent, 4410);
 
   lo = Problem::utils::parse_limit_order(lines[idx++]);
   EXPECT_EQ(lo.timestamp, 28800744);
   EXPECT_EQ(lo.type, Order::Type::Reduce);
   EXPECT_EQ(lo.id, "b");
-  EXPECT_EQ(lo.price, 0);
+  EXPECT_EQ(lo.price_cent, 0);
 
   lo = Problem::utils::parse_limit_order(lines[idx++]);
   EXPECT_EQ(lo.timestamp, 28800758);
   EXPECT_EQ(lo.type, Order::Type::Add);
   EXPECT_EQ(lo.id, "d");
-  EXPECT_NEAR(lo.price, 44.18, tolerance);
+  EXPECT_EQ(lo.price_cent, 4418);
   EXPECT_EQ(lo.size, 157);
 
   lo = Problem::utils::parse_limit_order(lines[idx++]);
@@ -85,7 +97,7 @@ TEST(OrderTest, TestInputLines) {
   EXPECT_EQ(lo.type, Order::Type::Add);
   EXPECT_EQ(lo.id, "e");
   EXPECT_EQ(lo.side, Order::Side::Ask);
-  EXPECT_NEAR(lo.price, 44.38, tolerance);
+  EXPECT_EQ(lo.price_cent, 4438);
   EXPECT_EQ(lo.size, 100);
 
   lo = Problem::utils::parse_limit_order(lines[idx++]);
@@ -99,7 +111,7 @@ TEST(OrderTest, TestInputLines) {
   EXPECT_EQ(lo.type, Order::Type::Add);
   EXPECT_EQ(lo.id, "f");
   EXPECT_EQ(lo.side, Order::Side::Bid);
-  EXPECT_NEAR(lo.price, 44.18, tolerance);
+  EXPECT_EQ(lo.price_cent, 4418);
   EXPECT_EQ(lo.size, 157);
 
   lo = Problem::utils::parse_limit_order(lines[idx++]);
@@ -107,6 +119,6 @@ TEST(OrderTest, TestInputLines) {
   EXPECT_EQ(lo.type, Order::Type::Add);
   EXPECT_EQ(lo.id, "g");
   EXPECT_EQ(lo.side, Order::Side::Ask);
-  EXPECT_NEAR(lo.price, 44.27, tolerance);
+  EXPECT_EQ(lo.price_cent, 4427);
   EXPECT_EQ(lo.size, 100);
 }

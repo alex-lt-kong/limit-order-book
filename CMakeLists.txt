@@ -24,3 +24,6 @@ add_library(utils src/utils.cpp)
 
 add_executable(order-test src/tests/order-test.cpp)
 target_link_libraries(order-test utils GTest::gtest GTest::gtest_main GTest::gmock)
+
+add_executable(pricer src/pricer.cpp)
+target_link_libraries(pricer utils)
