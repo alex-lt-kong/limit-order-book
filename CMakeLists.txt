@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.31)
-project(binary_search_tree)
+project(order-book-programming-problem)
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
 ################################
 # GTest
@@ -21,9 +21,10 @@ add_executable(heap-impl-test src/tests/heap-impl-test.cpp)
 target_link_libraries(heap-impl-test GTest::gtest GTest::gtest_main GTest::gmock)
 
 add_library(utils src/utils.cpp)
+add_library(order-book src/order-book.cpp)
 
 add_executable(order-test src/tests/order-test.cpp)
 target_link_libraries(order-test utils GTest::gtest GTest::gtest_main GTest::gmock)
 
 add_executable(pricer src/pricer.cpp)
-target_link_libraries(pricer utils)
+target_link_libraries(pricer utils order-book)
