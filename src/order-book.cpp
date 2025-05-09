@@ -24,7 +24,7 @@ void OrderBook::add_order(Order::LimitOrder order) {
 
   const auto existing_order = order_by_id[order.id];
   if (existing_order->side == Order::Side::Ask) {
-    for (auto &ask : asks[existing_order->price_cent]) {
+    for (auto const &ask : asks[existing_order->price_cent]) {
       if (ask->id == order.id) {
         ask->size -= order.size;
         if (ask->size < 0)

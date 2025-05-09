@@ -10,14 +10,14 @@
 
 namespace OrderBookProgrammingProblem {
 class OrderBook {
-private:
+public:
   std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> asks;
   std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> bids;
   std::unordered_map<std::string, std::shared_ptr<Order::LimitOrder>>
       order_by_id;
 
-public:
   void add_order(Order::LimitOrder order);
+
   std::string to_string() const;
 };
 } // namespace OrderBookProgrammingProblem
