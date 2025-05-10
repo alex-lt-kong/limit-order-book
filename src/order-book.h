@@ -11,12 +11,12 @@
 namespace OrderBookProgrammingProblem {
 class OrderBook {
 public:
-  std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> asks;
-  std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> bids;
+  std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> ask_prices;
+  std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> bid_prices;
   std::unordered_map<std::string, std::shared_ptr<Order::LimitOrder>>
       order_by_id;
 
-  void add_order(Order::LimitOrder order);
+  void add_order(const Order::LimitOrder &order);
 
   std::string to_string() const;
 };
