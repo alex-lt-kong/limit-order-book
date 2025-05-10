@@ -16,9 +16,9 @@ public:
   std::unordered_map<std::string, std::shared_ptr<Order::LimitOrder>>
       order_by_id;
 
-  void add_order(const Order::LimitOrder &order);
+  void add_order(const Order::LimitOrder &new_order);
 
-  std::string to_string() const;
+  std::string to_string();
 };
 } // namespace OrderBookProgrammingProblem
 

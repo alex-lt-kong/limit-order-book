@@ -16,8 +16,8 @@ struct LimitOrder {
   Type type = Type::Add;
   std::string id;
   Side side = Side::Bid;
-  int price_cent = 0;
-  int size = 0;
+  int64_t price_cent = 0;
+  int64_t size = 0;
 
   // This is for testing data structures, dont remove it for now
   LimitOrder(const int price) : price_cent(price) {}
