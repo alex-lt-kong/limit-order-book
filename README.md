@@ -14,7 +14,7 @@
 
 - Build
 
-  ```
+  ```shell
   mkdir build && cd build
   cmake ../
   cmake --build . --config Release
@@ -24,7 +24,7 @@
 
 - Run (results are written to stdout and debug info is written to stderr)
 
-  ```
+  ```shell
   ./pricer 1 < ./pricer.in 1>./stdout1.log 2>./stderr1.log
   ./pricer 200 < ./pricer.in 1>./stdout200.log 2>./stderr200.log
   ./pricer 10000 < ./pricer.in 1>./stdout10000.log 2>./stderr10000.log
@@ -34,36 +34,54 @@
     - stdout1.log vs pricer.out.1 (perfectly matching)
     - stdout200.log vs pricer.out.200 (perfectly matching)
     - stdout10000.log vs pricer.out.10000 (there seems to
-      be a precision issue that causes output to be off by ~0.001%)
+      be a precision issue that causes output to be off by ~0.001% for some
+      lines)
 
 ### 1.2 Performance benchmark
 
 - Prepare ramdisk and input data
 
-  ```
+  ```shell
+  sudo mkdir /tmp/tmpfs
   sudo mount -o size=128M -t tmpfs none /tmp/tmpfs
   cp ./assets/test-data/pricer.in /tmp/tmpfs/
   ```
 
 - Build with stdout/stderr turned off
 
-  ```
+  ```shell
   mkdir build && cd build
   cmake ../ -DBENCHMARK_PERFORMANCE=1
   cmake --build . --config Release
   ```
 
-- Time the execution without output
+- Time the execution with minimal output
 
-  ```
-  time ./pricer 200 < /tmp/tmpfs/pricer.in
+  ```shell
+  > time ./pricer 1 < /tmp/tmpfs/pricer.in
+  ./pricer exited gracefully, price changed 75335 time(s)
   
-  real	0m0.465s
-  user	0m0.460s
-  sys	0m0.004s
+  real	0m1.711s
+  user	0m1.691s
+  sys	0m0.020s
+  # ~693K orders/sec
+  
+  > time ./pricer 200 < /tmp/tmpfs/pricer.in
+  ./pricer exited gracefully, price changed 211539 time(s)
+  
+  real	0m1.717s
+  user	0m1.708s
+  sys	0m0.008s
+  # ~696K orders/sec
+  
+  > time ./pricer 10000 < /tmp/tmpfs/pricer.in
+  ./pricer exited gracefully, price changed 777063 time(s)
+  
+  real	0m3.800s
+  user	0m3.788s
+  sys	0m0.012s
+  # ~313K orders/sec
   ```
-
-    - Translate to performance of 2.5M order/sec
 
 ## 2. The Problem
 

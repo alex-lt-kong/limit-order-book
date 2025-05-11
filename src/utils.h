@@ -7,14 +7,16 @@
 #include <vector>
 
 namespace OrderBookProgrammingProblem {
-class utils {
+class Utils {
+private:
+  std::vector<std::string_view> order_line_parts;
   static void split_string(std::string_view str, char delimiter,
                            std::vector<std::string_view> &result);
 
 public:
   static bool at_most_n_decimal_places(std::string_view str, size_t n);
 
-  static Order::LimitOrder parse_limit_order(const std::string &);
+  Order::LimitOrder parse_limit_order(const std::string &);
 };
 } // namespace OrderBookProgrammingProblem
 

@@ -15,7 +15,7 @@ namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
 
 template <typename View>
-std::optional<int> get_pricer_cost_cent(
+std::optional<int> __attribute__((noinline)) get_pricer_cost_cent(
     const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
     View transform, int target_size) {
   int cost_cent = 0;
@@ -63,11 +63,9 @@ bool update_previous_cost_cent(const std::optional<int> new_cost_cent,
   return false;
 }
 
-void print_new_cost(const Order::LimitOrder &lo,
-                    const std::optional<int> new_cost_cent,
-                    const bool is_sell) {
-  if constexpr (benchmark_performance)
-    return;
+void __attribute__((noinline))
+print_new_cost(const Order::LimitOrder &lo,
+               const std::optional<int> new_cost_cent, const bool is_sell) {
   std::string line = std::to_string(lo.timestamp) + (is_sell ? " S " : " B ");
   if (new_cost_cent.has_value())
     line += std::format("{:.2f}", new_cost_cent.value() / 100.0);
@@ -86,15 +84,17 @@ int main(const int argc, char *argv[]) {
     std::cerr << argv[0] << " started with target size: " << target_size
               << std::endl;
   Problem::OrderBook order_book;
+  Problem::Utils utils;
   std::string in_line;
   std::optional<Order::LimitOrder> prev_lo;
+  size_t price_change_count = 0;
   // buy/sell here is from pricer's perspective
   std::optional<int> sell_cost_cent = std::nullopt;
   std::optional<int> buy_cost_cent = std::nullopt;
   // Asked Microsoft Copilot and confirmed by checking source code,
   // std::getline() reuses in_line, it wont allocate new std::string each time
   while (std::getline(std::cin, in_line)) {
-    const auto lo = Problem::utils::parse_limit_order(in_line);
+    const auto lo = utils.parse_limit_order(in_line);
     if (prev_lo.has_value()) {
       if (lo.timestamp < prev_lo->timestamp)
         throw std::invalid_argument("timestamp not monotonically increasing");
@@ -108,15 +108,24 @@ int main(const int argc, char *argv[]) {
     const auto new_sell_cost_cent =
         get_pricer_sell_cost_cent(order_book.bid_prices, target_size);
     if (update_previous_cost_cent(new_sell_cost_cent, sell_cost_cent)) {
-      print_new_cost(lo, new_sell_cost_cent, true);
+      if constexpr (!benchmark_performance)
+        print_new_cost(lo, new_sell_cost_cent, true);
+      else
+        ++price_change_count;
     }
     const auto new_buy_cost_cent =
         get_pricer_buy_cost_cent(order_book.ask_prices, target_size);
     if (update_previous_cost_cent(new_buy_cost_cent, buy_cost_cent)) {
-      print_new_cost(lo, new_buy_cost_cent, false);
+      if constexpr (!benchmark_performance)
+        print_new_cost(lo, new_buy_cost_cent, false);
+      else
+        ++price_change_count;
     }
   }
-  if constexpr (!benchmark_performance)
-    std::cerr << argv[0] << " exited gracefully" << std::endl;
+  // Even with benchmark_performance == true we'd better print something
+  // meaningful at the end...just in case the compiler is super smart and
+  // optimizes everything away
+  std::cerr << argv[0] << " exited gracefully, price changed "
+            << price_change_count << " time(s)" << std::endl;
   return 0;
 }
