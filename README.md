@@ -34,7 +34,7 @@
     - stdout1.log vs pricer.out.1
     - stdout200.log vs pricer.out.200
     - stdout10000.log vs pricer.out.10000 (for 10000 target size there seems to
-      be a precision issue that causes output to be off by ~0.01%)
+      be a precision issue that causes output to be off by ~0.001%)
 
 ### 1.2 Performance benchmark
 
