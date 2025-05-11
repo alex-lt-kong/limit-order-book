@@ -2,14 +2,73 @@
 
 ## Table of contents
 
-- [1. The Problem](#1-the-problem)
-- [2. Limited order book basics](#2-limited-order-book-basics)
-- [3. Factors to consider before implementing an LOB](#3-factors-to-consider-before-implementing-an-lob)
-- [4. Candidate data structures for LOB implementation](#4-candidate-data-structures-for-LOB-implementation)
+- [1. The Solution](#1-the-solution)
+- [2. The Problem](#2-the-problem)
+- [3. Limited order book basics](#3-limited-order-book-basics)
+- [4. Factors to consider before implementing an LOB](#4-factors-to-consider-before-implementing-an-lob)
+- [5. Candidate data structures for LOB implementation](#5-candidate-data-structures-for-LOB-implementation)
 
-## 1. The Problem
+## 1. The Solution
 
-- The problem, originally called "Order Book Programming Problem", was organized by RGM Advisors (now part of DRW).
+### 1.1 Build and run
+
+- Build
+
+  ```
+  mkdir build && cd build
+  cmake ../
+  cmake --build . --config Release
+  ```
+
+- Unzip `pricer.in` from `./assets/test-data/pricer.in.gz`
+
+- Run (results are written to stdout and debug info is written to stderr)
+
+  ```
+  ./pricer 1 < ./pricer.in 1>./stdout1.log 2>./stderr1.log
+  ./pricer 200 < ./pricer.in 1>./stdout200.log 2>./stderr200.log
+  ./pricer 10000 < ./pricer.in 1>./stdout10000.log 2>./stderr10000.log
+  ```
+
+- Check outputs against test cases:
+    - stdout1.log vs pricer.out.1
+    - stdout200.log vs pricer.out.200
+    - stdout10000.log vs pricer.out.10000 (for 10000 target size there seems to
+      be a precision issue that causes output to be off by ~0.01%)
+
+### 1.2 Performance benchmark
+
+- Prepare ramdisk and input data
+
+  ```
+  sudo mount -o size=128M -t tmpfs none /tmp/tmpfs
+  cp ./assets/test-data/pricer.in /tmp/tmpfs/
+  ```
+
+- Build with stdout/stderr turned off
+
+  ```
+  mkdir build && cd build
+  cmake ../ -DBENCHMARK_PERFORMANCE=1
+  cmake --build . --config Release
+  ```
+
+- Time the execution without output
+
+  ```
+  time ./pricer 200 < /tmp/tmpfs/pricer.in
+  
+  real	0m0.465s
+  user	0m0.460s
+  sys	0m0.004s
+  ```
+
+    - Translate to performance of 2.5M order/sec
+
+## 2. The Problem
+
+- The problem, originally called "Order Book Programming Problem", was organized
+  by RGM Advisors (now part of DRW).
 
 - The problem's official website has been taken down since a while ago, the
   below duplicate is sourced
@@ -507,9 +566,9 @@ gzip.
 28816245 B 8840.00
 </pre>
 
-## 2. Limited order book basics
+## 3. Limited order book basics
 
-### 2.1 What is a limited order book (LOB)
+### 3.1 What is a limited order book (LOB)
 
 - A limit order book is a record of outstanding limit orders. A limit order is a
   type of order to buy or sell a security at a specific price or
@@ -549,7 +608,7 @@ gzip.
       <img src="./assets/images/level-3-market-data-illustration.webp" width="30%" />
     </p>
 
-## 3. Factors to consider before implementing an LOB
+## 4. Factors to consider before implementing an LOB
 
 - To give some idea of the data volumes,
   the [Nasdaq TotalView ITCH](https://data.nasdaq.com/databases/NTV) feed,
@@ -559,7 +618,7 @@ gzip.
   100,000-200,000 messages per second during high volume
   periods. [[How to Build a Fast Limit Order Book]](https://web.archive.org/web/20110219163448/http://howtohft.wordpress.com/2011/02/15/how-to-build-a-fast-limit-order-book/)
 
-### 3.1 The business use case
+### 4.1 The business use case
 
 - Consider the below factors:
     - What queries need to be optimized for your application?
@@ -584,7 +643,7 @@ gzip.
   or futures (level-based, a.k.a., Market by Price or
   MBP) <sup>[[What is an efficient data structure to model order book?]](https://quant.stackexchange.com/a/32482/83130)
 
-### 2.2 Engineering considerations
+### 4.2 Engineering considerations
 
 - There are three main operations that an LOB has to implement: add, cancel, and
   execute. The goal is to implement these operations in O(1) time while making
@@ -604,9 +663,9 @@ gzip.
 
 - https://github.com/da-bao-jian/fast_limit_orderbook
 
-## 4. Candidate data structures for LOB implementation
+## 5. Candidate data structures for LOB implementation
 
-### 4.1 Binary search tree
+### 5.1 Binary search tree
 
 - A Binary Search Tree (BST) is a type of Binary Tree data structure, where the
   following properties must be true for any node "X" in the
@@ -635,7 +694,7 @@ gzip.
 
       ![](./assets/images/bst-delete.gif "bst-insert.gif")
 
-### 4.2 Heap
+### 5.2 Heap
 
 - A Min-Heap is a Data Structure with the following
   properties.[[2](https://www.geeksforgeeks.org/introduction-to-min-heap-data-structure/)]

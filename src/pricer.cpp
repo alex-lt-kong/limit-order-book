@@ -5,14 +5,20 @@
 #include <ranges>
 #include <string>
 
+#if defined(BENCHMARK_PERFORMANCE) && (BENCHMARK_PERFORMANCE == 1)
+constexpr bool benchmark_performance = true;
+#else
+constexpr bool benchmark_performance = false;
+#endif
+
 namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
 
 template <typename View>
-std::optional<int64_t> get_pricer_cost_cent(
+std::optional<int> get_pricer_cost_cent(
     const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
     View transform, int target_size) {
-  int64_t cost_cent = 0;
+  int cost_cent = 0;
   for (const auto &price_level : transform(prices)) {
     for (const auto &order : std::views::reverse(price_level)) {
       if (target_size >= order->size) {
@@ -32,7 +38,7 @@ std::optional<int64_t> get_pricer_cost_cent(
   return cost_cent;
 }
 
-std::optional<int64_t> get_pricer_sell_cost_cent(
+std::optional<int> get_pricer_sell_cost_cent(
     const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
     const int target_size) {
   // Think about it, for get_pricer_cost_cent, if I want to complete its type,
@@ -41,22 +47,15 @@ std::optional<int64_t> get_pricer_sell_cost_cent(
   return get_pricer_cost_cent(prices, std::views::reverse, target_size);
 }
 
-std::optional<int64_t> get_pricer_buy_cost_cent(
+std::optional<int> get_pricer_buy_cost_cent(
     const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
     const int target_size) {
   return get_pricer_cost_cent<decltype(std::views::all)>(
       prices, std::views::all, target_size);
 }
 
-std::optional<double> get_pricer_buy_cost_dollar(
-    const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
-    const int target_size) {
-  return get_pricer_cost_cent<decltype(std::views::all)>(
-      prices, std::views::all, target_size);
-}
-
-bool update_previous_cost_cent(const std::optional<int64_t> new_cost_cent,
-                               std::optional<int64_t> &previous_cost_cent) {
+bool update_previous_cost_cent(const std::optional<int> new_cost_cent,
+                               std::optional<int> &previous_cost_cent) {
   if (new_cost_cent != previous_cost_cent) {
     previous_cost_cent = new_cost_cent;
     return true;
@@ -65,8 +64,10 @@ bool update_previous_cost_cent(const std::optional<int64_t> new_cost_cent,
 }
 
 void print_new_cost(const Order::LimitOrder &lo,
-                    const std::optional<int64_t> new_cost_cent,
+                    const std::optional<int> new_cost_cent,
                     const bool is_sell) {
+  if constexpr (benchmark_performance)
+    return;
   std::string line = std::to_string(lo.timestamp) + (is_sell ? " S " : " B ");
   if (new_cost_cent.has_value())
     line += std::format("{:.2f}", new_cost_cent.value() / 100.0);
@@ -81,14 +82,17 @@ int main(const int argc, char *argv[]) {
   if (argc == 2) {
     target_size = std::stoi(argv[1]);
   }
-  std::cerr << argv[0] << " started with target size: " << target_size
-            << std::endl;
+  if constexpr (!benchmark_performance)
+    std::cerr << argv[0] << " started with target size: " << target_size
+              << std::endl;
   Problem::OrderBook order_book;
   std::string in_line;
   std::optional<Order::LimitOrder> prev_lo;
   // buy/sell here is from pricer's perspective
-  std::optional<int64_t> sell_cost_cent = std::nullopt;
-  std::optional<int64_t> buy_cost_cent = std::nullopt;
+  std::optional<int> sell_cost_cent = std::nullopt;
+  std::optional<int> buy_cost_cent = std::nullopt;
+  // Asked Microsoft Copilot and confirmed by checking source code,
+  // std::getline() reuses in_line, it wont allocate new std::string each time
   while (std::getline(std::cin, in_line)) {
     const auto lo = Problem::utils::parse_limit_order(in_line);
     if (prev_lo.has_value()) {
@@ -97,19 +101,22 @@ int main(const int argc, char *argv[]) {
     }
     prev_lo = lo;
     order_book.add_order(lo);
-    std::cerr << "LimitOrder: " << lo << "\n";
-    std::cerr << "OrderBook:\n" << order_book.to_string() << "\n";
+    if constexpr (!benchmark_performance) {
+      std::cerr << "LimitOrder: " << lo << "\n";
+      std::cerr << "OrderBook:\n" << order_book.to_string() << "\n";
+    }
     const auto new_sell_cost_cent =
         get_pricer_sell_cost_cent(order_book.bid_prices, target_size);
     if (update_previous_cost_cent(new_sell_cost_cent, sell_cost_cent)) {
       print_new_cost(lo, new_sell_cost_cent, true);
     }
     const auto new_buy_cost_cent =
-        get_pricer_buy_cost_dollar(order_book.ask_prices, target_size);
+        get_pricer_buy_cost_cent(order_book.ask_prices, target_size);
     if (update_previous_cost_cent(new_buy_cost_cent, buy_cost_cent)) {
       print_new_cost(lo, new_buy_cost_cent, false);
     }
   }
-  std::cerr << argv[0] << " exited gracefully" << std::endl;
+  if constexpr (!benchmark_performance)
+    std::cerr << argv[0] << " exited gracefully" << std::endl;
   return 0;
 }

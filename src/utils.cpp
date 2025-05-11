@@ -1,7 +1,7 @@
 #include "utils.h"
 
 namespace OrderBookProgrammingProblem {
-void utils::split_string(std::string_view str, char delimiter,
+void utils::split_string(std::string_view str, const char delimiter,
                          std::vector<std::string_view> &result) {
   result.clear();
   size_t start = 0, end;
