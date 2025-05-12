@@ -44,7 +44,8 @@
   ```shell
   sudo mkdir /tmp/tmpfs
   sudo mount -o size=128M -t tmpfs none /tmp/tmpfs
-  cp ./assets/test-data/pricer.in /tmp/tmpfs/
+  cp ./assets/test-data/pricer.in.gz /tmp/tmpfs/
+  gzip -d /tmp/tmpfs/pricer.in.gz
   ```
 
 - Build with stdout/stderr turned off

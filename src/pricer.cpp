@@ -1,4 +1,4 @@
-#include "order-book.h"
+#include "order-book-array.h"
 #include "utils.h"
 
 #include <iostream>
@@ -13,46 +13,6 @@ constexpr bool benchmark_performance = false;
 
 namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
-
-template <typename View>
-std::optional<int> __attribute__((noinline)) get_pricer_cost_cent(
-    const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
-    View transform, int target_size) {
-  int cost_cent = 0;
-  for (const auto &price_level : transform(prices)) {
-    for (const auto &order : std::views::reverse(price_level)) {
-      if (target_size >= order->size) {
-        target_size -= order->size;
-        cost_cent += order->size * order->price_cent;
-      } else {
-        cost_cent += target_size * order->price_cent;
-        target_size = 0;
-        break;
-      }
-    }
-    if (target_size == 0)
-      break;
-  }
-  if (target_size > 0)
-    return std::nullopt;
-  return cost_cent;
-}
-
-std::optional<int> get_pricer_sell_cost_cent(
-    const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
-    const int target_size) {
-  // Think about it, for get_pricer_cost_cent, if I want to complete its type,
-  // like get_pricer_cost_cent<T>(prices, std::views::reverse, target_size);
-  // what would T be?
-  return get_pricer_cost_cent(prices, std::views::reverse, target_size);
-}
-
-std::optional<int> get_pricer_buy_cost_cent(
-    const std::vector<std::list<std::shared_ptr<Order::LimitOrder>>> &prices,
-    const int target_size) {
-  return get_pricer_cost_cent<decltype(std::views::all)>(
-      prices, std::views::all, target_size);
-}
 
 bool update_previous_cost_cent(const std::optional<int> new_cost_cent,
                                std::optional<int> &previous_cost_cent) {
@@ -82,8 +42,8 @@ int main(const int argc, char *argv[]) {
   }
   if constexpr (!benchmark_performance)
     std::cerr << argv[0] << " started with target size: " << target_size
-              << std::endl;
-  Problem::OrderBook order_book;
+        << std::endl;
+  auto order_book = Problem::OrderBookArray();
   Problem::Utils utils;
   std::string in_line;
   std::optional<Order::LimitOrder> prev_lo;
@@ -106,7 +66,7 @@ int main(const int argc, char *argv[]) {
       std::cerr << "OrderBook:\n" << order_book.to_string() << "\n";
     }
     const auto new_sell_cost_cent =
-        get_pricer_sell_cost_cent(order_book.bid_prices, target_size);
+        order_book.get_pricer_sell_cost_cent(target_size);
     if (update_previous_cost_cent(new_sell_cost_cent, sell_cost_cent)) {
       if constexpr (!benchmark_performance)
         print_new_cost(lo, new_sell_cost_cent, true);
@@ -114,7 +74,7 @@ int main(const int argc, char *argv[]) {
         ++price_change_count;
     }
     const auto new_buy_cost_cent =
-        get_pricer_buy_cost_cent(order_book.ask_prices, target_size);
+        order_book.get_pricer_buy_cost_cent(target_size);
     if (update_previous_cost_cent(new_buy_cost_cent, buy_cost_cent)) {
       if constexpr (!benchmark_performance)
         print_new_cost(lo, new_buy_cost_cent, false);
@@ -126,6 +86,6 @@ int main(const int argc, char *argv[]) {
   // meaningful at the end...just in case the compiler is super smart and
   // optimizes everything away
   std::cerr << argv[0] << " exited gracefully, price changed "
-            << price_change_count << " time(s)" << std::endl;
+      << price_change_count << " time(s)" << std::endl;
   return 0;
 }

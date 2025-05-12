@@ -32,8 +32,7 @@ if (INCLUDE_TEST)
 endif ()
 
 add_library(utils src/utils.cpp)
-add_library(order-book src/order-book.cpp)
 
 
 add_executable(pricer src/pricer.cpp)
-target_link_libraries(pricer utils order-book)
+target_link_libraries(pricer utils)
