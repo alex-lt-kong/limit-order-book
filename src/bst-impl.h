@@ -4,15 +4,18 @@
 #include <print>
 #include <vector>
 
-namespace PoC::OrderBook {
-
+namespace OrderBookProgrammingProblem {
     template<std::totally_ordered T>
     struct TreeNode {
         T val;
         TreeNode *left;
         TreeNode *right;
-        TreeNode() : val(0), left(nullptr), right(nullptr) {}
-        explicit TreeNode(T x) : val(x), left(nullptr), right(nullptr) {}
+
+        TreeNode() : val(0), left(nullptr), right(nullptr) {
+        }
+
+        explicit TreeNode(T x) : val(x), left(nullptr), right(nullptr) {
+        }
     };
 
     template<std::totally_ordered T>
@@ -20,7 +23,7 @@ namespace PoC::OrderBook {
     public:
         // insert() method passed all tests at
         // https://leetcode.com/problems/insert-into-a-binary-search-tree/description/
-        static bool insert(TreeNode<T> **root, int val) {
+        static bool insert(TreeNode<T> **root, T val) {
             if (*root == nullptr) {
                 *root = new TreeNode<T>(val);
                 return true;
@@ -61,7 +64,7 @@ namespace PoC::OrderBook {
 
         // search() method passed all tests at
         // https://leetcode.com/problems/search-in-a-binary-search-tree/description/
-        static TreeNode<T> *search(TreeNode<T> *root, int val) {
+        static TreeNode<T> *search(TreeNode<T> *root, T val) {
             if (root == nullptr) {
                 return nullptr;
             }

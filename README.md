@@ -37,6 +37,35 @@
       be a precision issue that causes output to be off by ~0.001% for some
       lines)
 
+- The string representation of the order book (showing ten levels only)
+
+```
+Ask:
+....
+Level: 10, Price: 44.37, Size:   100, AccuSize:  1510, AccuVolume:  6680730, Orders: { { id:  pghe, size:  100 } }
+Level:  9, Price: 44.31, Size:   100, AccuSize:  1410, AccuVolume:  6237030, Orders: { { id:  hwte, size:  100 } }
+Level:  8, Price: 44.29, Size:   100, AccuSize:  1310, AccuVolume:  5793930, Orders: { { id:  qbgg, size:  100 } }
+Level:  7, Price: 44.28, Size:   100, AccuSize:  1210, AccuVolume:  5351030, Orders: { { id:  plfg, size:  100 } }
+Level:  6, Price: 44.25, Size:   400, AccuSize:  1110, AccuVolume:  4908230, Orders: { { id:  lfse, size:  100 },  { id:  ozaf, size:  100 },  { id:  mplg, size:  200 } }
+Level:  5, Price: 44.23, Size:    10, AccuSize:   710, AccuVolume:  3138230, Orders: { { id:  ymye, size:   10 } }
+Level:  4, Price: 44.22, Size:    50, AccuSize:   700, AccuVolume:  3094000, Orders: { { id:  bckg, size:   50 } }
+Level:  3, Price: 44.21, Size:   100, AccuSize:   650, AccuVolume:  2872900, Orders: { { id:  vhcg, size:  100 } }
+Level:  2, Price: 44.20, Size:   350, AccuSize:   550, AccuVolume:  2430800, Orders: { { id:  lbbf, size:  100 },  { id:  hwlg, size:  250 } }
+Level:  1, Price: 44.19, Size:   200, AccuSize:   200, AccuVolume:   883800, Orders: { { id:  izlg, size:  100 },  { id:  xzlg, size:  100 } }
+Bid:
+Level:  1, Price: 44.17, Size:   156, AccuSize:   156, AccuVolume:   689052, Orders: { { id:  qzlg, size:   14 },  { id:  rzlg, size:   14 },  { id:  szlg, size:    7 },  { id:  tzlg, size:   21 },  { id:  wzlg, size:  100 } }
+Level:  2, Price: 44.16, Size:   400, AccuSize:   556, AccuVolume:  2455452, Orders: { { id:  mxlg, size:  100 },  { id:  ezlg, size:  100 },  { id:  qwlg, size:  200 } }
+Level:  3, Price: 44.15, Size:   550, AccuSize:  1106, AccuVolume:  4883702, Orders: { { id:  zrlg, size:  300 },  { id:  pzlg, size:  250 } }
+Level:  4, Price: 44.14, Size:  1000, AccuSize:  2106, AccuVolume:  9297702, Orders: { { id:  urlg, size: 1000 } }
+Level:  5, Price: 44.12, Size:    48, AccuSize:  2154, AccuVolume:  9509478, Orders: { { id:  ellg, size:   48 } }
+Level:  6, Price: 44.05, Size:   100, AccuSize:  2254, AccuVolume:  9949978, Orders: { { id:  rtkg, size:  100 } }
+Level:  7, Price: 44.04, Size:    10, AccuSize:  2264, AccuVolume:  9994018, Orders: { { id:  xrlg, size:   10 } }
+Level:  8, Price: 44.03, Size:   200, AccuSize:  2464, AccuVolume: 10874618, Orders: { { id:  wvlg, size:  200 } }
+Level:  9, Price: 43.99, Size:    29, AccuSize:  2493, AccuVolume: 11002189, Orders: { { id:  phcg, size:   29 } }
+Level: 10, Price: 43.92, Size:   960, AccuSize:  3453, AccuVolume: 15218509, Orders: { { id:  sczf, size:  100 },  { id:  odzf, size:   10 },  { id:  yyyf, size:  100 },  { id:  yxzf, size:  150 },  { id:  umag, size:  500 },  { id:  pbgg, size:  100 } }
+...
+```
+
 ### 1.2 Performance benchmark
 
 - Prepare ramdisk and input data
@@ -52,8 +81,8 @@
 
   ```shell
   mkdir build && cd build
-  cmake ../ -DBENCHMARK_PERFORMANCE=1
-  cmake --build . --config Release
+  cmake ../ -DBENCHMARK_PERFORMANCE=1 -DCMAKE_BUILD_TYPE=Release
+  cmake --build . --target pricer -j 10
   ```
 
 - Time the execution with minimal output

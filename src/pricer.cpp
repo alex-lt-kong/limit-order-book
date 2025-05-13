@@ -1,18 +1,16 @@
 #include "order-book-array.h"
+#include "order-book-bst.h"
 #include "utils.h"
 
 #include <iostream>
 #include <ranges>
 #include <string>
 
-#if defined(BENCHMARK_PERFORMANCE) && (BENCHMARK_PERFORMANCE == 1)
-constexpr bool benchmark_performance = true;
-#else
-constexpr bool benchmark_performance = false;
-#endif
 
 namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
+
+using OrderBookImpl = Problem::OrderBookBst;
 
 bool update_previous_cost_cent(const std::optional<int> new_cost_cent,
                                std::optional<int> &previous_cost_cent) {
@@ -43,7 +41,7 @@ int main(const int argc, char *argv[]) {
   if constexpr (!benchmark_performance)
     std::cerr << argv[0] << " started with target size: " << target_size
         << std::endl;
-  auto order_book = Problem::OrderBookArray();
+  auto order_book = OrderBookImpl();
   Problem::Utils utils;
   std::string in_line;
   std::optional<Order::LimitOrder> prev_lo;
@@ -54,6 +52,9 @@ int main(const int argc, char *argv[]) {
   // Asked Microsoft Copilot and confirmed by checking source code,
   // std::getline() reuses in_line, it wont allocate new std::string each time
   while (std::getline(std::cin, in_line)) {
+    if constexpr (!benchmark_performance) {
+      std::cerr << "===== new order comes in =====\n";
+    }
     const auto lo = utils.parse_limit_order(in_line);
     if (prev_lo.has_value()) {
       if (lo.timestamp < prev_lo->timestamp)
@@ -63,7 +64,7 @@ int main(const int argc, char *argv[]) {
     order_book.add_order(lo);
     if constexpr (!benchmark_performance) {
       std::cerr << "LimitOrder: " << lo << "\n";
-      std::cerr << "OrderBook:\n" << order_book.to_string() << "\n";
+      std::cerr << "OrderBook:\n" << order_book.to_string() << std::endl;
     }
     const auto new_sell_cost_cent =
         order_book.get_pricer_sell_cost_cent(target_size);

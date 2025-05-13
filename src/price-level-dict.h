@@ -1,42 +1,42 @@
-#ifndef PRICE_LEVEL_DOUBLY_LINKED_LIST_H
-#define PRICE_LEVEL_DOUBLY_LINKED_LIST_H
+#ifndef PRICE_LEVEL_DICT_H
+#define PRICE_LEVEL_DICT_H
 
 #include "utils.h"
 #include "order.h"
 #include "price-level-interface.h"
 
-#include <list>
+#include <memory>
+#include <unordered_map>
 
 
 namespace OrderBookProgrammingProblem {
-  class PriceLevelDoublyLinkedList
-      : public IPriceLevel<PriceLevelDoublyLinkedList> {
-    std::list<std::shared_ptr<Order::LimitOrder> > orders;
+  class PriceLevelDict : public IPriceLevel<PriceLevelDict> {
+    std::unordered_map<std::string, std::shared_ptr<Order::LimitOrder> > orders;
 
   public:
-    PriceLevelDoublyLinkedList() = default;
+    PriceLevelDict() = default;
 
     void FUNC_ATTRIBUTE add_order_impl(const std::shared_ptr<Order::LimitOrder> &new_order) {
       if (!orders.empty()) {
-        if ((*orders.begin())->price_cent != new_order->price_cent)
+        if (orders.begin()->second->price_cent != new_order->price_cent)
           throw std::invalid_argument(
             "new_order does not belong to this price level");
       }
 
-      orders.push_back(new_order);
+      orders[new_order->id] = new_order;
     }
 
     int FUNC_ATTRIBUTE update_order_impl(const std::shared_ptr<Order::LimitOrder> &new_order) {
-      for (auto const &order: orders) {
-        if (order->id == new_order->id) {
-          order->size -= new_order->size;
-          if (order->size < 0) {
+      for (const auto &[k, val]: orders) {
+        if (k == new_order->id) {
+          val->size -= new_order->size;
+          if (val->size < 0) {
             throw std::invalid_argument("new_order size is negative");
           }
-          if (order->size == 0) {
-            orders.remove(order);
+          if (val->size == 0) {
+            orders.erase(k);
           }
-          return order->size;
+          return val->size;
         }
       }
       return -1;
@@ -47,8 +47,8 @@ namespace OrderBookProgrammingProblem {
         return std::nullopt;
       }
       int orders_size = 0;
-      for (const auto &order: orders) {
-        orders_size += order->size;
+      for (const auto &[k, val]: orders) {
+        orders_size += val->size;
       }
       return orders_size;
     }
@@ -57,8 +57,8 @@ namespace OrderBookProgrammingProblem {
       if (orders.empty()) {
         return std::nullopt;
       }
-      return orders.front()->price_cent;
+      return orders.begin()->second->price_cent;
     }
   };
 } // namespace OrderBookProgrammingProblem
-#endif // PRICE_LEVEL_DOUBLY_LINKED_LIST_H
+#endif // PRICE_LEVEL_DICT_H
