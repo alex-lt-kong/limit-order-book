@@ -1,19 +1,19 @@
-#include "order-book-array.h"
-#include "order-book-bst.h"
+#include "order-book/order-book-array.h"
+#include "order-book/order-book-bst.h"
 #include "utils.h"
 
 #include <iostream>
 #include <ranges>
 #include <string>
 
-
 namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
 
 using OrderBookImpl = Problem::OrderBookBst;
 
-bool update_previous_cost_cent(const std::optional<int> new_cost_cent,
-                               std::optional<int> &previous_cost_cent) {
+bool FUNC_ATTRIBUTE
+update_previous_cost_cent(const std::optional<int> new_cost_cent,
+                          std::optional<int> &previous_cost_cent) {
   if (new_cost_cent != previous_cost_cent) {
     previous_cost_cent = new_cost_cent;
     return true;
@@ -21,9 +21,9 @@ bool update_previous_cost_cent(const std::optional<int> new_cost_cent,
   return false;
 }
 
-void __attribute__((noinline))
-print_new_cost(const Order::LimitOrder &lo,
-               const std::optional<int> new_cost_cent, const bool is_sell) {
+void FUNC_ATTRIBUTE print_new_cost(const Order::LimitOrder &lo,
+                                   const std::optional<int> new_cost_cent,
+                                   const bool is_sell) {
   std::string line = std::to_string(lo.timestamp) + (is_sell ? " S " : " B ");
   if (new_cost_cent.has_value())
     line += std::format("{:.2f}", new_cost_cent.value() / 100.0);
@@ -40,7 +40,7 @@ int main(const int argc, char *argv[]) {
   }
   if constexpr (!benchmark_performance)
     std::cerr << argv[0] << " started with target size: " << target_size
-        << std::endl;
+              << std::endl;
   auto order_book = OrderBookImpl();
   Problem::Utils utils;
   std::string in_line;
@@ -87,6 +87,6 @@ int main(const int argc, char *argv[]) {
   // meaningful at the end...just in case the compiler is super smart and
   // optimizes everything away
   std::cerr << argv[0] << " exited gracefully, price changed "
-      << price_change_count << " time(s)" << std::endl;
+            << price_change_count << " time(s)" << std::endl;
   return 0;
 }

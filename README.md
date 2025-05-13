@@ -10,14 +10,27 @@
 
 ## 1. The Solution
 
-### 1.1 Build and run
+### 1.1 Design
+
+- Two implementations of the OrderBook:
+    - `std::vector`: `bid_prices[p]` stores the bid orders at price `p` in
+      cents, i.e., bid_prices[4412] stores the bid orders at price 44.12. The
+      same applies to ask_prices.
+        - Fast (`O(1)`) in order addition/amendment/removal
+        - Slow (`O(n)` where `n` is the depth of the order book) in order book
+          traversal with many misses.
+    - binary search tree
+- Three implementations of price level: `std::list` (doubly-linked list),
+  `std::unordered_map`(hash table) and `std::vector`
+
+### 1.2 Build and run
 
 - Build
 
   ```shell
   mkdir build && cd build
-  cmake ../
-  cmake --build . --config Release
+  cmake ../  -DCMAKE_BUILD_TYPE=Release
+  cmake --build . --target pricer --config Release -j 10
   ```
 
 - Unzip `pricer.in` from `./assets/test-data/pricer.in.gz`
@@ -66,7 +79,7 @@ Level: 10, Price: 43.92, Size:   960, AccuSize:  3453, AccuVolume: 15218509, Ord
 ...
 ```
 
-### 1.2 Performance benchmark
+### 1.3 Performance benchmark
 
 - Prepare ramdisk and input data
 
@@ -82,27 +95,27 @@ Level: 10, Price: 43.92, Size:   960, AccuSize:  3453, AccuVolume: 15218509, Ord
   ```shell
   mkdir build && cd build
   cmake ../ -DBENCHMARK_PERFORMANCE=1 -DCMAKE_BUILD_TYPE=Release
-  cmake --build . --target pricer -j 10
+  cmake --build . --target pricer --config Release -j 10
   ```
 
 - Time the execution with minimal output
 
   ```shell
-  > time ./pricer 1 < /tmp/tmpfs/pricer.in
+  > time ./pricer 1 < /tmp/tmpfs/pricer.in 
   ./pricer exited gracefully, price changed 75335 time(s)
   
-  real	0m1.711s
-  user	0m1.691s
-  sys	0m0.020s
-  # ~693K orders/sec
+  real	0m0.775s
+  user	0m0.738s
+  sys	0m0.036s
+  # ~1.5M orders/sec
   
-  > time ./pricer 200 < /tmp/tmpfs/pricer.in
+  > time ./pricer 200 < /tmp/tmpfs/pricer.in 
   ./pricer exited gracefully, price changed 211539 time(s)
   
-  real	0m1.717s
-  user	0m1.708s
-  sys	0m0.008s
-  # ~696K orders/sec
+  real	0m0.812s
+  user	0m0.780s
+  sys	0m0.032s
+  # ~1.5M orders/sec
   
   > time ./pricer 10000 < /tmp/tmpfs/pricer.in
   ./pricer exited gracefully, price changed 777063 time(s)

@@ -1,7 +1,7 @@
 #ifndef ORDER_BOOK_INTERFACE_H
 #define ORDER_BOOK_INTERFACE_H
 
-#include "order.h"
+#include "../order.h"
 
 #include <memory>
 #include <ranges>
