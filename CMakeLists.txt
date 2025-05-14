@@ -34,5 +34,14 @@ endif ()
 add_library(utils src/utils.cpp)
 
 
-add_executable(pricer src/pricer.cpp)
-target_link_libraries(pricer utils)
+add_executable(pricer-array src/pricer.cpp)
+target_compile_definitions(pricer-array PRIVATE ORDER_BOOK_IMPL_ARRAY=1)
+target_link_libraries(pricer-array utils)
+
+add_executable(pricer-bst src/pricer.cpp)
+target_compile_definitions(pricer-bst PRIVATE ORDER_BOOK_IMPL_BST=1)
+target_link_libraries(pricer-bst utils)
+
+add_executable(pricer-std-map src/pricer.cpp)
+target_compile_definitions(pricer-std-map PRIVATE ORDER_BOOK_IMPL_STD_MAP=1)
+target_link_libraries(pricer-std-map utils)

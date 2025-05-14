@@ -10,7 +10,16 @@
 namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
 
+
+#ifdef ORDER_BOOK_IMPL_ARRAY
+using OrderBookImpl = Problem::OrderBookArray;
+#elif ORDER_BOOK_IMPL_BST
+using OrderBookImpl = Problem::OrderBookBst;
+#elif ORDER_BOOK_IMPL_STD_MAP
 using OrderBookImpl = Problem::OrderBookStdMap;
+#endif
+//using OrderBookImpl = Problem::OrderBookStdMap;
+
 
 bool FUNC_ATTRIBUTE
 update_previous_cost_cent(const std::optional<int> new_cost_cent,

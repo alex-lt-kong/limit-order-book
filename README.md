@@ -12,15 +12,21 @@
 
 ### 1.1 Design
 
-- Two implementations of the OrderBook:
-    - `std::vector`: `bid_prices[p]` stores the bid orders at price `p` in
+- Three implementations of the OrderBook:
+    - `OrderBookArray`: `bid_prices[p]` stores the bid orders at price `p` in
       cents, i.e., bid_prices[4412] stores the bid orders at price 44.12. The
       same applies to ask_prices.
-        - Fast (`O(1)`) in order addition/amendment/removal
-        - Slow (`O(n)` where `n` is the depth of the order book) in order book
-          traversal with many misses.
-    - binary search tree
-- Three implementations of price level: `std::list` (doubly-linked list),
+        - Fast (O(1)) in order addition/amendment/removal;
+        - Slow (O(N) where N is the depth of the order book) in order book traversal (as there are many holes);
+        - Performs better if the price levels are close to each other (e.g., the product is liquid).
+    - `OrderBookBst`: Each binary search tree node stores one bid/ask price level.
+        - Relatively slow (O(logN)) in order addition/amendment/removal
+        - Relatively fase (O(logN)) in order book traversal
+        - Perform better if the pricer levels are sparse (e.g., the product is illiquid).
+    - `OrderBookStdMap`: Uses `std::map`, which is STL's implementation of a binary search tree, mostly the same as
+      `OrderBookBst` just slower lol
+- Three implementations of price level (i.e., a collection of orders with the same price): `std::list` (doubly-linked
+  list),
   `std::unordered_map`(hash table) and `std::vector`
 
 ### 1.2 Build and run
@@ -30,7 +36,7 @@
   ```shell
   mkdir build && cd build
   cmake ../  -DCMAKE_BUILD_TYPE=Release
-  cmake --build . --target pricer --config Release -j 10
+  cmake --build . --config Release -j 10
   ```
 
 - Unzip `pricer.in` from `./assets/test-data/pricer.in.gz`
@@ -38,9 +44,9 @@
 - Run (results are written to stdout and debug info is written to stderr)
 
   ```shell
-  ./pricer 1 < ./pricer.in 1>./stdout1.log 2>./stderr1.log
-  ./pricer 200 < ./pricer.in 1>./stdout200.log 2>./stderr200.log
-  ./pricer 10000 < ./pricer.in 1>./stdout10000.log 2>./stderr10000.log
+  ./pricer-array 1 < ./pricer.in 1>./stdout1.log 2>./stderr1.log
+  ./pricer-bst 200 < ./pricer.in 1>./stdout200.log 2>./stderr200.log
+  ./pricer-std-map 10000 < ./pricer.in 1>./stdout10000.log 2>./stderr10000.log
   ```
 
 - Check outputs against test cases:
@@ -95,35 +101,35 @@ Level: 10, Price: 43.92, Size:   960, AccuSize:  3453, AccuVolume: 15218509, Ord
   ```shell
   mkdir build && cd build
   cmake ../ -DBENCHMARK_PERFORMANCE=1 -DCMAKE_BUILD_TYPE=Release
-  cmake --build . --target pricer --config Release -j 10
+  cmake --build . --config Release -j 10
   ```
 
 - Time the execution with minimal output
 
-  ```shell
-  > time ./pricer 1 < /tmp/tmpfs/pricer.in 
-  ./pricer exited gracefully, price changed 75335 time(s)
+  ```shell  
+  > time ./pricer-bst 1 < /tmp/tmpfs/pricer.in
+  ./pricer-bst exited gracefully, price changed 75335 time(s)
+
+  real    0m0.666s
+  user    0m0.630s
+  sys     0m0.036s
+  # ~1.8M orders/sec
   
-  real	0m0.775s
-  user	0m0.738s
-  sys	0m0.036s
-  # ~1.5M orders/sec
-  
-  > time ./pricer 200 < /tmp/tmpfs/pricer.in 
-  ./pricer exited gracefully, price changed 211539 time(s)
-  
-  real	0m0.812s
-  user	0m0.780s
-  sys	0m0.032s
-  # ~1.5M orders/sec
-  
-  > time ./pricer 10000 < /tmp/tmpfs/pricer.in
-  ./pricer exited gracefully, price changed 777063 time(s)
-  
-  real	0m3.800s
-  user	0m3.788s
-  sys	0m0.012s
-  # ~313K orders/sec
+  >  time ./pricer-array 200 < /tmp/tmpfs/pricer.in
+  ./pricer-array exited gracefully, price changed 211539 time(s)
+
+  real    0m0.551s
+  user    0m0.526s
+  sys     0m0.024s
+  # ~2.2M orders/sec 
+
+  > time ./pricer-bst 10000 < /tmp/tmpfs/pricer.in
+  ./pricer-bst exited gracefully, price changed 777063 time(s)
+
+  real    0m1.680s
+  user    0m1.647s
+  sys     0m0.032s
+  # ~711K orders/sec
   ```
 
 ## 2. The Problem

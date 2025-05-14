@@ -26,47 +26,16 @@ namespace OrderBookProgrammingProblem {
     std::unordered_map<std::string, std::shared_ptr<Order::LimitOrder> >
     order_by_id;
 
-    template<TraversalOrder TOrder, AllowedView View2>
-    static std::string get_repr_of_one_side(TreeNode<PriceLevelImpl> *price_levels, View2 transform2) {
-      std::vector<std::string> levels; // = label + ":\n";
-      int accu_volume = 0, accu_size = 0;
-
-      size_t level = 0;
-      const BST::CallbackType on_new_price_level =
-          [&](void *, PriceLevelArray &price_level) {
-        auto level_price_cent = price_level.get_level_price();
-        if (!level_price_cent.has_value()) {
-          throw std::logic_error("!level_price_cent.has_value(), how come?");
-        }
-        levels.push_back(std::format("Level: {:>2}, Price: {:>5.02f}, ",
-                                     ++level,
-                                     level_price_cent.value() / 100.0));
-        int level_size = price_level.get_level_size().value();
-
-        std::string orders_detail = price_level.to_string();
-        accu_size += level_size;
-        accu_volume += level_size * level_price_cent.value();
-        levels[levels.size() - 1] += std::format(
-          "Size: {:>5}, AccuSize: {:>5}, AccuVolume: {:>8}, Orders: {}",
-          level_size, accu_size, accu_volume, orders_detail);
-
-        return true;
-      };
-      BST::inorder_traversal_cb<TOrder>(price_levels, on_new_price_level, nullptr);
-
-      return (levels | transform2 | std::views::join_with(std::string("\n")) |
-              std::ranges::to<std::string>()) +
-             "\n";
-    }
-
     std::string get_string_repr_ask_side() const {
-      return "Ask:\n"/* + get_repr_of_one_side<TraversalOrder::RightRootLeft, decltype(std::views::reverse)>(
-               ask_prices, std::views::reverse)*/;
+      return "Ask:\n<NotImplemented>\n"
+          /* + get_repr_of_one_side<TraversalOrder::RightRootLeft, decltype(std::views::reverse)>(
+                         ask_prices, std::views::reverse)*/;
     }
 
     std::string get_string_repr_bid_side() const {
-      return "Bid:\n"/* + get_repr_of_one_side<TraversalOrder::LeftRootRight, decltype(std::views::all)>(
-               bid_prices, std::views::all)*/;
+      return "Bid:\nNotImplemented\n"
+          /* + get_repr_of_one_side<TraversalOrder::LeftRootRight, decltype(std::views::all)>(
+                         bid_prices, std::views::all)*/;
     }
 
   public:
@@ -88,18 +57,18 @@ namespace OrderBookProgrammingProblem {
         } else {
           cost_cent += target_size * level_price_cent;
           target_size = 0;
-          return false;
+          return cost_cent;
         }
       }
       return std::nullopt;
     }
 
     std::optional<int> FUNC_ATTRIBUTE get_pricer_sell_cost_cent_impl(const int target_size) {
-      return get_pricer_cost_cent_impl<decltype(std::views::all)>(bid_prices, std::views::all, target_size);
+      return get_pricer_cost_cent_impl<decltype(std::views::reverse)>(bid_prices, std::views::reverse, target_size);
     }
 
     std::optional<int> FUNC_ATTRIBUTE get_pricer_buy_cost_cent_impl(const int target_size) {
-      return get_pricer_cost_cent_impl<decltype(std::views::reverse)>(ask_prices, std::views::reverse, target_size);
+      return get_pricer_cost_cent_impl<decltype(std::views::all)>(ask_prices, std::views::all, target_size);
     }
 
     void FUNC_ATTRIBUTE add_order_impl(const Order::LimitOrder &new_order) {
