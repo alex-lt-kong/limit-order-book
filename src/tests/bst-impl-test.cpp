@@ -7,8 +7,7 @@
 #include <random>
 #include <thread>
 
-using namespace PoC::OrderBook;
-using namespace OrderBookProgrammingProblem::Order;
+using namespace OrderBookProgrammingProblem;
 using BST = BinarySearchTree<int>;
 
 TEST(Bst, InsertShouldWork) {
@@ -112,8 +111,8 @@ TEST(Bst, InsertThenDeleteEntireBSTShouldWork) {
 }
 
 TEST(Bst, CanDeallocateByKeepDeletingRoot) {
-  using BST = BinarySearchTree<LimitOrder>;
-  TreeNode<LimitOrder> *root = nullptr;
+  using BST = BinarySearchTree<Order::LimitOrder>;
+  TreeNode<Order::LimitOrder> *root = nullptr;
   BST::insert(&root, -7);
 
   std::random_device rd;

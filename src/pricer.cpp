@@ -1,5 +1,6 @@
 #include "order-book/order-book-array.h"
 #include "order-book/order-book-bst.h"
+#include "order-book/order-book-std-map.h"
 #include "utils.h"
 
 #include <iostream>
@@ -9,7 +10,7 @@
 namespace Problem = OrderBookProgrammingProblem;
 namespace Order = Problem::Order;
 
-using OrderBookImpl = Problem::OrderBookBst;
+using OrderBookImpl = Problem::OrderBookStdMap;
 
 bool FUNC_ATTRIBUTE
 update_previous_cost_cent(const std::optional<int> new_cost_cent,
@@ -40,7 +41,7 @@ int main(const int argc, char *argv[]) {
   }
   if constexpr (!benchmark_performance)
     std::cerr << argv[0] << " started with target size: " << target_size
-              << std::endl;
+        << std::endl;
   auto order_book = OrderBookImpl();
   Problem::Utils utils;
   std::string in_line;
@@ -87,6 +88,6 @@ int main(const int argc, char *argv[]) {
   // meaningful at the end...just in case the compiler is super smart and
   // optimizes everything away
   std::cerr << argv[0] << " exited gracefully, price changed "
-            << price_change_count << " time(s)" << std::endl;
+      << price_change_count << " time(s)" << std::endl;
   return 0;
 }

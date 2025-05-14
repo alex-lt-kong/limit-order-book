@@ -74,21 +74,19 @@ namespace OrderBookProgrammingProblem {
 
     // Custom three-way comparison
     auto operator<=>(const PriceLevelArray &other) const {
-      /*if (other.orders.empty() && orders.empty()) {
-        throw std::logic_error("other.orders.empty() || orders.empty()");
-      }
-      if (other.orders.empty()) {
-        return -1;
-      }*/
       return orders.front()->price_cent <=> other.orders.front()->price_cent;
     }
 
+    auto operator<=>(const int other) const {
+      return orders.front()->price_cent <=> other;
+    }
+
     bool operator==(const PriceLevelArray &other) const {
-      /*
-      if (other.orders.empty() || orders.empty()) {
-        throw std::logic_error("other.orders.empty() || orders.empty()");
-      }*/
       return orders.front()->price_cent == other.orders.front()->price_cent;
+    }
+
+    bool operator==(const int other) const {
+      return orders.front()->price_cent == other;
     }
   };
 } // namespace OrderBookProgrammingProblem
